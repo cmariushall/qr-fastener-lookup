@@ -1,0 +1,38 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = "file:./dev.db"
+}
+
+model Vehicle {
+  id       Int       @id @default(autoincrement())
+  year     Int
+  make     String
+  model    String
+  fitments Fitment[]
+
+  @@unique([year, make, model], name: "year_make_model")
+}
+
+model Fastener {
+  id              Int       @id @default(autoincrement())
+  partNumber      String    @unique
+  type            String?
+  locationDesc    String?
+  locationTags    String?   // Store as comma-separated text for now
+  attributes      Json?
+  imageUrl        String?
+  embedding       Json?
+  fitments        Fitment[]
+}
+
+model Fitment {
+  id          Int       @id @default(autoincrement())
+  vehicleId   Int
+  fastenerId  Int
+  vehicle     Vehicle   @relation(fields: [vehicleId], references: [id])
+  fastener    Fastener  @relation(fields: [fastenerId], references: [id])
+}
